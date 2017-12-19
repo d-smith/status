@@ -1,0 +1,23 @@
+Resources:
+  ModelSTM:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: modelId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: modelId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      TableName:
+        'Fn::Join':
+          - '-'
+          - - !Ref 'AWS::StackName'
+            - ModelSTM
+Outputs:
+  TableName:
+    Value: !Ref ModelSTM
+    Export:
+      Name: !Sub '${AWS::StackName}-TableName'
