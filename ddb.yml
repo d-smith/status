@@ -1,3 +1,9 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Create two tables - one to store the state of status models,
+  one to store a mapping from model name to state transition
+  function name.
+
 Resources:
   ModelSTM:
     Type: 'AWS::DynamoDB::Table'
