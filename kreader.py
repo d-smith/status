@@ -4,6 +4,8 @@ import json
 import os
 
 ddb_client = boto3.client('dynamodb')
+lambda_client = boto3.client('lambda')
+
 table_name = os.environ['STM_TABLE_NAME']
 
 def lambda_handler(event, context):
@@ -39,4 +41,17 @@ def lambda_handler(event, context):
         
         item = response['Item']
         fn_name = item['functionName']['S']
-        print fn_name
+        
+        
+        print 'calling function {} with payload {}'.format(fn_name, decoded)
+
+        
+        response = lambda_client.invoke(
+            FunctionName=fn_name,
+            InvocationType='Event',
+            #LogType='Tail',
+            #ClientContext=base64.b64encode('{"txnId":"what, me worry?"}'),
+            Payload=decoded
+        )
+
+        print response
