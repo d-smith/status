@@ -15,3 +15,10 @@ def lambda_handler(event, context):
         print 'parse data'
         parsed = json.loads(decoded)
         print parsed
+
+        txn_id = parsed['txnId']
+        model_id = parsed['modelId']
+
+        print 'processing status for transaction {} model {}'.format(
+            txn_id, model_id
+        )
