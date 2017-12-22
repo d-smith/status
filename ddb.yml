@@ -41,6 +41,9 @@ Outputs:
     Export:
       Name: !Sub '${AWS::StackName}-STFTableName'
 
+  STFTableArn:
+    Value: !GetAtt ModelSTM.Arn
+
   InstanceTableName:
     Value: !Ref ModelSTM
     Export:

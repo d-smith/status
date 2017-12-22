@@ -1,7 +1,10 @@
 import base64
 import boto3
 import json
+import os
 
+ddb_client = boto3.client('dynamodb')
+table_name = os.environ['STM_TABLE_NAME']
 
 def lambda_handler(event, context):
         
@@ -22,3 +25,13 @@ def lambda_handler(event, context):
         print 'processing status for transaction {} model {}'.format(
             txn_id, model_id
         )
+
+        response = ddb_client.get_item(
+            TableName=table_name,
+            Key={
+                'modelId': {'S': model_id}
+            }
+        )
+
+        if not 'Item' in response:
+            print 'Model {} not present in {}'.format(model_id, table_name)

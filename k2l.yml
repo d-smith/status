@@ -12,6 +12,10 @@ Parameters:
   EventZipFileName:
     Type: String
     Default: eventproc.zip
+  ModelSTMTableArn:
+    Type: String
+  ModelSTMTableName:
+    Type: String
 
 Resources:
   MyStream:
@@ -35,6 +39,9 @@ Resources:
           S3Key: !Ref ZipFileName
       Runtime: "python2.7"
       Timeout: 60
+      Environment:
+        Variables:
+          STM_TABLE_NAME: !Ref ModelSTMTableName
 
   EventSourceMapping: 
     Type: "AWS::Lambda::EventSourceMapping"
@@ -111,3 +118,12 @@ Resources:
             - lambda:InvokeAsync
             - lambda:InvokeFunction
             Resource: '*'
+      - PolicyName: ddb
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - dynamodb:GetItem
+            - dynamodb:BatchGetItem
+            Resource: !Sub ${ModelSTMTableArn}
