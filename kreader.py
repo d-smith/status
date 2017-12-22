@@ -35,3 +35,8 @@ def lambda_handler(event, context):
 
         if not 'Item' in response:
             print 'Model {} not present in {}'.format(model_id, table_name)
+            return
+        
+        item = response['Item']
+        fn_name = item['functionName']['S']
+        print fn_name
