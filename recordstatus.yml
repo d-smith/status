@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >
-  Deploy a lambda function that maintains the pizza state model
+  Deploy a lambda function that maintains the records status model state
 
 Parameters:
   CodeBucketName:
@@ -8,7 +8,7 @@ Parameters:
     Description: Bucket containing lambda code zip file
   ZipFileName:
     Type: String
-    Default: pizza.zip
+    Default: recordstatus.zip
   ModelInstanceTableArn:
     Type: String
   ModelInstanceTableName:
@@ -16,11 +16,11 @@ Parameters:
 
 Resources:
 
-  PizzaModel:
+  RecordStatusFunction:
     Type: "AWS::Lambda::Function"
     Properties:
-      Handler: "pizza.lambda_handler"
-      Role: !GetAtt PizzaModelExecutionRole.Arn
+      Handler: "recordstatus.lambda_handler"
+      Role: !GetAtt RecordStatusExecutionRole.Arn
       Code:
           S3Bucket: !Ref CodeBucketName
           S3Key: !Ref ZipFileName
@@ -33,7 +33,7 @@ Resources:
 
 
 
-  PizzaModelExecutionRole:
+  RecordStatusExecutionRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -75,5 +75,5 @@ Resources:
             - dynamodb:PutItem
             Resource: !Sub ${ModelInstanceTableArn}
 Outputs:
-  PizzaModelFunctionName:
-    Value: !Ref PizzaModel
+  RecordStatusFunctionName:
+    Value: !Ref RecordStatusFunction
