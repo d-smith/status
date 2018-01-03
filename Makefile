@@ -1,9 +1,10 @@
-package:
-	rm -f kreader.zip
+package: clean
 	zip kreader.zip kreader.py
-	rm -f pizza.zip
-	zip pizza.zip pizza.py
+	zip recordstatus.zip recordstatus.py
 
 deploy:
 	aws s3 cp kreader.zip s3://$(DEPLOY_BUCKET)
-	aws s3 cp pizza.zip s3://$(DEPLOY_BUCKET)
+	aws s3 cp recordstatus.zip s3://$(DEPLOY_BUCKET)
+
+clean:
+	rm -f *.zip
