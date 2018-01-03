@@ -44,13 +44,17 @@ Resources:
 Outputs:
   STFTableName:
     Value: !Ref ModelSTM
-    Export:
-      Name: !Sub '${AWS::StackName}-STFTableName'
+#    Export:
+#      Name: !Sub '${AWS::StackName}-STFTableName'
 
   STFTableArn:
     Value: !GetAtt ModelSTM.Arn
 
   InstanceTableName:
-    Value: !Ref ModelSTM
-    Export:
-      Name: !Sub '${AWS::StackName}-InstanceTableName'
+    Value: !Ref ModelInstance
+#    Export:
+#      Name: !Sub '${AWS::StackName}-InstanceTableName'
+
+  InstanceTableArn:
+    Value: !GetAtt ModelInstance.Arn
+
