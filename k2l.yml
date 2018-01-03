@@ -18,7 +18,7 @@ Parameters:
     Type: String
 
 Resources:
-  MyStream:
+  StatusSourceStream:
     Type: 'AWS::Kinesis::Stream'
     Properties:
       Name: MyKinesisStream
@@ -58,7 +58,7 @@ Resources:
               Ref: "AWS::AccountId"
             - ":stream/"
             - 
-              Ref: "MyStream"
+              Ref: "StatusSourceStream"
       FunctionName: 
         Fn::GetAtt: 
           - "KinesisReader"
@@ -68,7 +68,7 @@ Resources:
 
   KinesisReaderExecutionRole:
     Type: AWS::IAM::Role
-    DependsOn: MyStream
+    DependsOn: StatusSourceStream
     Properties:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
@@ -107,7 +107,7 @@ Resources:
             - kinesis:DescribeStream
             - kinesis:GetRecords
             - kinesis:GetShardIterator
-            Resource: !Sub ${MyStream.Arn}
+            Resource: !Sub ${StatusSourceStream.Arn}
       - PolicyName: lambda
         PolicyDocument:
           Version: '2012-10-17'
@@ -127,3 +127,7 @@ Resources:
             - dynamodb:GetItem
             - dynamodb:BatchGetItem
             Resource: !Sub ${ModelSTMTableArn}
+
+Outputs:
+  StreamName:
+    Value: !Ref StatusSourceStream
