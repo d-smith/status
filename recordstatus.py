@@ -9,10 +9,13 @@
 
 import os
 import boto3
+import time
 
 table_name = os.environ['MODEL_INSTANCE_TABLE_NAME']
 
 ddb_client = boto3.client('dynamodb')
+
+current_milli_time = lambda: int(round(time.time() * 1000))
 
 def lambda_handler(event, context):
     print 'state recorder function called with {}'.format(event)
@@ -25,7 +28,8 @@ def lambda_handler(event, context):
         Item={
             'instanceId':{'S': instance_id},
             'txnId':{'S': txn_id},
-            'state':{'S' : state}
+            'state':{'S' : state},
+            'timestamp': {'N' : str(current_milli_time())}
         }
     )
 
