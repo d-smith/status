@@ -21,7 +21,12 @@ Resources:
   StatusSourceStream:
     Type: 'AWS::Kinesis::Stream'
     Properties:
-      Name: MyKinesisStream
+      Name:
+        'Fn::Join':
+          - '-'
+          - - !Ref 'AWS::StackName'
+            - MyKinesisStream
+
       RetentionPeriodHours: 24
       ShardCount: 1
       Tags:

@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Deploy a lambda function that maintains the xtrac status model state
+
+Parameters:
+  CodeBucketName:
+    Type: String
+    Description: Bucket containing lambda code zip file
+  ZipFileName:
+    Type: String
+    Default: xtracstatus.zip
+  ModelInstanceTableArn:
+    Type: String
+  ModelInstanceTableName:
+    Type: String
+
+Resources:
+
+  XTRACStatusFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Handler: "xtracstatus.lambda_handler"
+      Role: !GetAtt XTRACStatusExecutionRole.Arn
+      Code:
+          S3Bucket: !Ref CodeBucketName
+          S3Key: !Ref ZipFileName
+      Runtime: "python2.7"
+      Timeout: 60
+      Environment:
+        Variables:
+          MODEL_INSTANCE_TABLE_NAME: !Ref ModelInstanceTableName
+
+
+
+
+  XTRACStatusExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+            - edgelambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: logs
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:*
+            Resource: arn:aws:logs:*:*:*
+      - PolicyName: metrics
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - cloudwatch:PutMetricData
+            Resource: '*'
+      - PolicyName: ddb
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - dynamodb:GetItem
+            - dynamodb:BatchGetItem
+            - dynamodb:PutItem
+            Resource: !Sub ${ModelInstanceTableArn}
+Outputs:
+  XTRACStatusFunctionName:
+    Value: !Ref XTRACStatusFunction
