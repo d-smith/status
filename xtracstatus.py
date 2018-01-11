@@ -20,7 +20,7 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 
 def lambda_handler(event, context):
     print 'xtrac status function called with {}'.format(event)
-    txn_id = uuid.uuid4()
+    txn_id = str(uuid.uuid4())
 
     workItem = event['XtracEvent']['WorkItem']
     print workItem
