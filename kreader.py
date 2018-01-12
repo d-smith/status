@@ -8,6 +8,78 @@ lambda_client = boto3.client('lambda')
 
 table_name = os.environ['STM_TABLE_NAME']
 
+
+        
+
+def process_standard_record(parsed, decoded):
+    txn_id = parsed['txnId']
+    model_id = parsed['modelId']
+
+    print 'processing status for transaction {} model {}'.format(
+        txn_id, model_id
+    )
+
+    response = ddb_client.get_item(
+        TableName=table_name,
+        Key={
+            'modelId': {'S': model_id}
+        }
+    )
+
+    if not 'Item' in response:
+        print 'Model {} not present in {}'.format(model_id, table_name)
+        return
+    
+    item = response['Item']
+    fn_name = item['functionName']['S']
+    
+    
+    print 'calling function {} with payload {}'.format(fn_name, decoded)
+
+    
+    response = lambda_client.invoke(
+        FunctionName=fn_name,
+        InvocationType='Event',
+        #LogType='Tail',
+        #ClientContext=base64.b64encode('{"txnId":"what, me worry?"}'),
+        Payload=decoded
+    )
+
+    print response
+
+def process_non_standard_record(parsed, decoded):
+    if not 'XtracEvent' in parsed:
+        print 'Event is the most non standard event in history, maybe ever'
+        return
+
+    model_id = 'xtrac-model'
+    
+    response = ddb_client.get_item(
+        TableName=table_name,
+        Key={
+            'modelId': {'S': model_id}
+        }
+    )
+
+    if not 'Item' in response:
+        print 'Model {} not present in {}'.format(model_id, table_name)
+        return
+    
+    item = response['Item']
+    fn_name = item['functionName']['S']
+    
+    
+    print 'calling function {} with payload {}'.format(fn_name, decoded)
+
+    
+    response = lambda_client.invoke(
+        FunctionName=fn_name,
+        InvocationType='Event',
+        #LogType='Tail',
+        #ClientContext=base64.b64encode('{"txnId":"what, me worry?"}'),
+        Payload=decoded
+    )
+
 def lambda_handler(event, context):
         
     print 'event: {}'.format(event)
@@ -21,37 +93,7 @@ def lambda_handler(event, context):
         parsed = json.loads(decoded)
         print parsed
 
-        txn_id = parsed['txnId']
-        model_id = parsed['modelId']
-
-        print 'processing status for transaction {} model {}'.format(
-            txn_id, model_id
-        )
-
-        response = ddb_client.get_item(
-            TableName=table_name,
-            Key={
-                'modelId': {'S': model_id}
-            }
-        )
-
-        if not 'Item' in response:
-            print 'Model {} not present in {}'.format(model_id, table_name)
-            return
-        
-        item = response['Item']
-        fn_name = item['functionName']['S']
-        
-        
-        print 'calling function {} with payload {}'.format(fn_name, decoded)
-
-        
-        response = lambda_client.invoke(
-            FunctionName=fn_name,
-            InvocationType='Event',
-            #LogType='Tail',
-            #ClientContext=base64.b64encode('{"txnId":"what, me worry?"}'),
-            Payload=decoded
-        )
-
-        print response
+        if 'txnId' in parsed:
+            process_standard_record(parsed, decoded)
+        else:
+            process_non_standard_record(parsed, decoded)
