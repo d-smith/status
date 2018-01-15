@@ -1,0 +1,7 @@
+export API_HOST=
+export API_PORT=
+export LOGIN_HOST=
+export LOGIN_PORT=
+export CLIENT_ID=
+export XT_USER=
+export XT_PASSWORD=
