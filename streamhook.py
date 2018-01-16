@@ -5,6 +5,14 @@ import boto3
 ses_client = boto3.client('ses')
 
 def lambda_handler(event, context):
+    print event
+    records = event['Records']
+    for r in records:
+        ddbCtx = r['dynamodb']
+        print ddbCtx
+        newImg = ddbCtx['NewImage']
+        print newImg
+        
     ses_client.send_email(
         Destination={
             'ToAddresses': [
