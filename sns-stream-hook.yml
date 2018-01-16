@@ -16,6 +16,9 @@ Parameters:
   TableName:
     Type: String
     Description: Table source of events
+  Sender:
+    Type: String
+    Description: Verified email to send from
 
 
 Resources:
@@ -55,6 +58,14 @@ Resources:
             Action:
             - logs:*
             Resource: arn:aws:logs:*:*:*
+      - PolicyName: ses
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - ses:SendEmail
+            Resource: '*'
       - PolicyName: streams
         PolicyDocument:
           Version: '2012-10-17'
