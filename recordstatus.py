@@ -23,14 +23,23 @@ def lambda_handler(event, context):
     instance_id = event['instanceId']
     state = event['state']
 
-    response = ddb_client.put_item(
-        TableName=table_name,
-        Item={
+    notify = ''
+    if 'notify' in event:
+        notify = event['notify']
+        
+    item = {
             'instanceId':{'S': instance_id},
             'txnId':{'S': txn_id},
             'state':{'S' : state},
             'timestamp': {'N' : str(current_milli_time())}
-        }
+    }
+    
+    if not notify == '':
+        item['notify'] = {'S': notify }
+
+    response = ddb_client.put_item(
+        TableName=table_name,
+        Item=item
     )
 
     print response
