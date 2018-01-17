@@ -31,17 +31,33 @@ def lambda_handler(event, context):
     status = workItem['Status']
     print status 
 
+    #Hack for demo purposes
+    notify = ''
+    if 'Memo' in workItem:
+        memo = workItem['Memo']
+        print 'memo is {}'.format(memo)
+        parts = memo.split('@')
+        if len(parts) == 2 and parts[1] == 'fmr.com':
+            notify = memo
+
+
     instance_id = workItemNo
     state = status
 
-    response = ddb_client.put_item(
-        TableName=table_name,
-        Item={
+    item = {
             'instanceId':{'S': instance_id},
             'txnId':{'S': txn_id},
             'state':{'S' : state},
             'timestamp': {'N' : str(current_milli_time())}
-        }
+    }
+    
+    if not notify == '':
+        item['notify'] = {'S': notify }
+
+
+    response = ddb_client.put_item(
+        TableName=table_name,
+        Item=item
     )
 
     print response
