@@ -37,7 +37,7 @@ def lambda_handler(event, context):
         memo = workItem['Memo']
         print 'memo is {}'.format(memo)
         parts = memo.split('@')
-        if len(parts) == 2 and parts[1] == 'fmr.com':
+        if len(parts) == 2':
             notify = memo
 
 

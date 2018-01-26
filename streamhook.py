@@ -1,10 +1,12 @@
 import boto3
+import os
+import json
+
+sender = os.environ['MAIL_SENDER']
 
 # Note: sender and recipient email addresses must be verified in the 
 # SES sandbox
-import json
-
-ses_client = boto3.client('ses')
+ses_client = boto4.client('ses')
 
 def lambda_handler(event, context):
     print event
@@ -29,7 +31,7 @@ def lambda_handler(event, context):
                 ses_client.send_email(
                     Destination={
                         'ToAddresses': [
-                            'doug.smith@fmr.com',
+                            notify,
                         ],
                     },
                     Message={
@@ -44,4 +46,4 @@ def lambda_handler(event, context):
                             'Data': 'Status Update',
                         },
                     },
-                    Source='a045103@fmr.com')    
+                    Source=message_source)    
